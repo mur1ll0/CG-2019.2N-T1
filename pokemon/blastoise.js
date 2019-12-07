@@ -121,7 +121,7 @@ function init() {
     controls.update();
 
     // GUI
-
+    /*
     gui = new GUI();
 
     gui.add(playbackConfig, 'speed', 0, 2).onChange(function () {
@@ -135,12 +135,13 @@ function init() {
         character.setWireframe(playbackConfig.wireframe);
 
     });
+    */
 
     // CHARACTER
     var loader = new THREE.JSONLoader();
     loader.load('blastoise2.json', function(g,m){
         character = new THREE.Mesh(g,m);
-        scene.add(character.root);
+        scene.add(character);
     })
     
     /*
@@ -218,7 +219,7 @@ function labelize(text) {
 }
 
 //
-
+/*
 function setupWeaponsGUI(character) {
 
     var folder = gui.addFolder("Weapons");
@@ -304,7 +305,7 @@ function setupGUIAnimations(character) {
 
     }
 }
-
+*/
 function animate() {
     requestAnimationFrame(animate);
     render();
