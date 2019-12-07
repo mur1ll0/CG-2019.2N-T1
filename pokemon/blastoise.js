@@ -314,7 +314,7 @@ function animate() {
 }
 
 function render() {
-    var delta = clock.getDelta();
+    //var delta = clock.getDelta();
     //character.update(delta);
 
     //character.root.rotation.y += 0.02;
