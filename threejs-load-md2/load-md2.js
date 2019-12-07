@@ -6,12 +6,12 @@
  */
 
 
-import * as THREE from '../../libs/three.js-r110/build/three.module.js';
-import Stats from '../../libs/three.js-r110/examples/jsm/libs/stats.module.js';
-import { GUI } from '../../libs/three.js-r110/examples/jsm/libs/dat.gui.module.js';
+import * as THREE from '../libs/three.js-r110/build/three.module.js';
+import Stats from '../libs/three.js-r110/examples/jsm/libs/stats.module.js';
+import { GUI } from '../libs/three.js-r110/examples/jsm/libs/dat.gui.module.js';
 
-import { OrbitControls } from '../../libs/three.js-r110/examples/jsm/controls/OrbitControls.js';
-import { MD2Character } from '../../libs/three.js-r110/examples/jsm/misc/MD2Character.js';
+import { OrbitControls } from '../libs/three.js-r110/examples/jsm/controls/OrbitControls.js';
+import { MD2Character } from '../libs/three.js-r110/examples/jsm/misc/MD2Character.js';
 
 var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
@@ -80,7 +80,7 @@ function init() {
 
     //  GROUND
 
-    var gt = new THREE.TextureLoader().load("../../libs/three.js-r110/examples/textures/terrain/grasslight-big.jpg");
+    var gt = new THREE.TextureLoader().load("../libs/three.js-r110/examples/textures/terrain/grasslight-big.jpg");
     var gg = new THREE.PlaneBufferGeometry(2000, 2000);
     var gm = new THREE.MeshPhongMaterial({ color: 0xffffff, map: gt });
 
@@ -140,7 +140,7 @@ function init() {
 
     var config = {
 
-        baseUrl: "../../libs/three.js-r110/examples/models/md2/ratamahatta/",
+        baseUrl: "../libs/three.js-r110/examples/models/md2/ratamahatta/",
 
         body: "ratamahatta.md2",
         skins: [
