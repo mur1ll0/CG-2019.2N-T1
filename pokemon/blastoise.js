@@ -11,7 +11,7 @@ import Stats from '../libs/three.js-r110/examples/jsm/libs/stats.module.js';
 import { GUI } from '../libs/three.js-r110/examples/jsm/libs/dat.gui.module.js';
 
 import { OrbitControls } from '../libs/three.js-r110/examples/jsm/controls/OrbitControls.js';
-//import { MD2Character } from '../libs/three.js-r110/examples/jsm/misc/MD2Character.js';
+import { MD2Character } from '../libs/three.js-r110/examples/jsm/misc/MD2Character.js';
 
 var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
@@ -140,7 +140,7 @@ function init() {
     var loader = new THREE.JSONLoader();
     loader.load('blastoise2.json', function(g,m){
         character = new THREE.Mesh(g,m);
-        scene.add(character);
+        scene.add(character.root);
     })
     
     /*
@@ -316,6 +316,6 @@ function render() {
     var delta = clock.getDelta();
     character.update(delta);
 
-    character.root.rotation.y += 0.02;
+    //character.root.rotation.y += 0.02;
     renderer.render(scene, camera);
 }
