@@ -32,7 +32,7 @@ var clock = new THREE.Clock();
 var stats;
 
 init();
-animate();
+//animate();
 
 function init() {
 
