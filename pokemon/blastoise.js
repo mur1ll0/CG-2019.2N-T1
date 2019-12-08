@@ -12,9 +12,9 @@ import { GUI } from '../libs/three.js-r110/examples/jsm/libs/dat.gui.module.js';
 
 import { OrbitControls } from '../libs/three.js-r110/examples/jsm/controls/OrbitControls.js';
 import { MD2Character } from '../libs/three.js-r110/examples/jsm/misc/MD2Character.js';
-import {OBJLoader2} from '../../libs/three.js-r110/examples/jsm/loaders/OBJLoader2.js';
-import {MTLLoader} from '../../libs/three.js-r110/examples/jsm/loaders/MTLLoader.js';
-import {MtlObjBridge} from '../../libs/three.js-r110/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js';
+
+import { GLTFLoader } from '../libs/GLTFLoader.js';
+
 
 
 var SCREEN_WIDTH = window.innerWidth;
@@ -35,8 +35,10 @@ var clock = new THREE.Clock();
 
 var stats;
 
+var blastoise;
+
 init();
-//animate();
+animate();
 
 function init() {
 
@@ -125,7 +127,7 @@ function init() {
     controls.update();
 
     // GUI
-    /*
+
     gui = new GUI();
 
     gui.add(playbackConfig, 'speed', 0, 2).onChange(function () {
@@ -139,44 +141,9 @@ function init() {
         character.setWireframe(playbackConfig.wireframe);
 
     });
-    */
 
     // CHARACTER
-    
-    const mtlLoader = new MTLLoader();
-    mtlLoader.load('blastoise2.mtl', (mtlParseResult) => {
-      const objLoader = new OBJLoader2();
-      const materials =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
-      objLoader.addMaterials(materials);
-      objLoader.load('blastoise2.obj', (root) => {
-        character = root;
-        scene.add(root);
-        /*
-        // compute the box that contains all the stuff
-        // from root and below
-        const box = new THREE.Box3().setFromObject(root);
 
-        const boxSize = box.getSize(new THREE.Vector3()).length();
-        const boxCenter = box.getCenter(new THREE.Vector3());
-
-        // set the camera to frame the box
-        frameArea(boxSize * 1.2, boxSize, boxCenter, camera);
-
-        // update the Trackball controls to handle the new size
-        controls.maxDistance = boxSize * 10;
-        controls.target.copy(boxCenter);
-        controls.update();
-        */
-      });
-    });
-    
-    /*var loader = new THREE.JSONLoader();
-    loader.load('blastoise2.json', function(g,m){
-        character = new THREE.Mesh(g,m);
-        scene.add(character);
-    })*/
-    
-    /*
     var config = {
 
         baseUrl: "../libs/three.js-r110/examples/models/md2/ratamahatta/",
@@ -212,11 +179,28 @@ function init() {
         character.setAnimation(character.meshBody.geometry.animations[0].name);
 
     };
-    
+
     character.loadParts(config);
 
     scene.add(character.root);
-    */
+    
+    
+    //BLASTOISE
+    var loader = new THREE.GLTFLoader();
+    loader.load(
+       "blastoise.glb",
+       function ( gltf ) {
+          var scale = 5.6;
+          blastoise.body = gltf.scene.children[0];
+          blastoise.body.name = “body”;
+          blastoise.body.rotation.set ( 0, -1.5708, 0 );
+          blastoise.body.scale.set (scale,scale,scale);
+          blastoise.body.position.set ( 0, 3.6, 0 );
+          blastoisebody.castShadow = true;
+          blastoise.frame.add(blastoise.body);
+       },
+    );scene.add( blastoise.frame )
+
 }
 
 // EVENT HANDLERS
@@ -251,7 +235,7 @@ function labelize(text) {
 }
 
 //
-/*
+
 function setupWeaponsGUI(character) {
 
     var folder = gui.addFolder("Weapons");
@@ -337,7 +321,7 @@ function setupGUIAnimations(character) {
 
     }
 }
-*/
+
 function animate() {
     requestAnimationFrame(animate);
     render();
@@ -346,9 +330,9 @@ function animate() {
 }
 
 function render() {
-    //var delta = clock.getDelta();
-    //character.update(delta);
+    var delta = clock.getDelta();
+    character.update(delta);
 
-    //character.root.rotation.y += 0.02;
+    character.root.rotation.y += 0.02;
     renderer.render(scene, camera);
 }
