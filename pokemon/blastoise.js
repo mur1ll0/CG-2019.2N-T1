@@ -13,7 +13,7 @@ import { GUI } from '../libs/three.js-r110/examples/jsm/libs/dat.gui.module.js';
 import { OrbitControls } from '../libs/three.js-r110/examples/jsm/controls/OrbitControls.js';
 import { MD2Character } from '../libs/three.js-r110/examples/jsm/misc/MD2Character.js';
 
-import { GLTFLoader } from '../libs/GLTFLoader.js';
+//import { GLTFLoader } from '../libs/GLTFLoader.js';
 
 
 
