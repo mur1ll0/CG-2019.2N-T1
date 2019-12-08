@@ -6,7 +6,7 @@
  */
 
 
-import * as THREE from '../libs/three.js-r92/build/three.module.js';
+import * as THREE from '../libs/three.js-r110/build/three.module.js';
 import Stats from '../libs/three.js-r110/examples/jsm/libs/stats.module.js';
 import { GUI } from '../libs/three.js-r110/examples/jsm/libs/dat.gui.module.js';
 
