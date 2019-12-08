@@ -192,7 +192,7 @@ function init() {
        function ( gltf ) {
           var scale = 5.6;
           blastoise.body = gltf.scene.children[0];
-          blastoise.body.name = “body”;
+          blastoise.body.name = "body";
           blastoise.body.rotation.set ( 0, -1.5708, 0 );
           blastoise.body.scale.set (scale,scale,scale);
           blastoise.body.position.set ( 0, 3.6, 0 );
