@@ -12,6 +12,10 @@ import { GUI } from '../libs/three.js-r110/examples/jsm/libs/dat.gui.module.js';
 
 import { OrbitControls } from '../libs/three.js-r110/examples/jsm/controls/OrbitControls.js';
 import { MD2Character } from '../libs/three.js-r110/examples/jsm/misc/MD2Character.js';
+import {OBJLoader2} from '../../libs/three.js-r110/examples/jsm/loaders/OBJLoader2.js';
+import {MTLLoader} from '../../libs/three.js-r110/examples/jsm/loaders/MTLLoader.js';
+import {MtlObjBridge} from '../../libs/three.js-r110/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js';
+
 
 var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
@@ -138,11 +142,39 @@ function init() {
     */
 
     // CHARACTER
-    var loader = new THREE.JSONLoader();
+    
+    const mtlLoader = new MTLLoader();
+    mtlLoader.load('blastoise2.mtl', (mtlParseResult) => {
+      const objLoader = new OBJLoader2();
+      const materials =  MtlObjBridge.addMaterialsFromMtlLoader(mtlParseResult);
+      objLoader.addMaterials(materials);
+      objLoader.load('blastoise2.obj', (root) => {
+        character = root;
+        scene.add(root);
+        /*
+        // compute the box that contains all the stuff
+        // from root and below
+        const box = new THREE.Box3().setFromObject(root);
+
+        const boxSize = box.getSize(new THREE.Vector3()).length();
+        const boxCenter = box.getCenter(new THREE.Vector3());
+
+        // set the camera to frame the box
+        frameArea(boxSize * 1.2, boxSize, boxCenter, camera);
+
+        // update the Trackball controls to handle the new size
+        controls.maxDistance = boxSize * 10;
+        controls.target.copy(boxCenter);
+        controls.update();
+        */
+      });
+    });
+    
+    /*var loader = new THREE.JSONLoader();
     loader.load('blastoise2.json', function(g,m){
         character = new THREE.Mesh(g,m);
         scene.add(character);
-    })
+    })*/
     
     /*
     var config = {
