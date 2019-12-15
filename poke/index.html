@@ -35,14 +35,15 @@
 			init();
 			animate();
 
+
 			function init() {
 
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 100 );
-				camera.position.set( - 5, 3, 10 );
-				camera.lookAt( new THREE.Vector3( 0, 2, 0 ) );
+				camera.position.set( 0, 9, 15 );
+				//camera.lookAt( new THREE.Vector3( 0, 2, 0 ) );
 
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0xe0e0e0 );
@@ -71,14 +72,22 @@
 				grid.material.transparent = true;
 				scene.add( grid );
 
+				///////////////////////////////////////////////////////////////
 				// CARREGAR MODELOS 3D
-
+				///////////////////////////////////////////////////////////////
+				//BLASTOISE
 				var loader = new GLTFLoader();
 				loader.load( './blastoise.gltf', function ( gltf ) {
 
 					model = gltf.scene;
 					scene.add( model );
 					model.scale.set(1,1,1);
+
+					//Aplica Double Side na mascara
+					//console.log(gltf.scene.children[1].children[13].material);
+					gltf.scene.children[1].children[13].material.side = THREE.DoubleSide;
+
+					//Criar a GUI com as animações
 					createGUI( model, gltf.animations );
 
 				}, undefined, function ( e ) {
@@ -97,7 +106,6 @@
 				container.appendChild( renderer.domElement );
 
 				window.addEventListener('resize', onWindowResize, false );
-				//document.addEventListener('keydown', onDocumentKeyDown, false);
 
 				// stats
 				stats = new Stats();
@@ -110,7 +118,7 @@
 
 			function createGUI( model, animations ) {
 
-				var states = [ 'idle','walk' ];
+				var states = [ 'idle','walk', 'attack' ];
 
 				gui = new GUI();
 
@@ -186,7 +194,8 @@
 			function update()
 			{
 				var newAnim = { state: 'idle' }
-
+				
+				//WASD Movement
 				if ( keyboard.pressed("W") ){
 					model.translateZ( moveSpeed );
 					newAnim = { state: 'walk' };
@@ -196,15 +205,20 @@
 					newAnim = { state: 'walk' };
 				}
 				if ( keyboard.pressed("A") ){
-					model.rotation.y = model.rotation.y + 0.01;
+					model.rotation.y = model.rotation.y + 0.02;
 					newAnim = { state: 'walk' };
 				}
 				else if ( keyboard.pressed("D") ){
-					model.rotation.y = model.rotation.y - 0.01;
+					model.rotation.y = model.rotation.y - 0.02;
 					newAnim = { state: 'walk' };
 				}
 
-				
+				//Q to attack
+				if ( keyboard.pressed("Q") ){
+					newAnim = { state: 'attack' };
+				}
+
+				//Change anim				
 				if (newAnim.state != api.state){
 					api.state = newAnim.state;
 					fadeToAction( api.state, 0.5 );
