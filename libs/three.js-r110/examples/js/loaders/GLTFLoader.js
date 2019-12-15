@@ -6,6 +6,8 @@
  * @author Don McCurdy / https://www.donmccurdy.com
  */
 
+import * as THREE from '../../../build/three.module.js';
+
 THREE.GLTFLoader = ( function () {
 
 	function GLTFLoader( manager ) {

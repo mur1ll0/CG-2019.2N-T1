@@ -13,7 +13,9 @@ import { GUI } from '../libs/three.js-r110/examples/jsm/libs/dat.gui.module.js';
 import { OrbitControls } from '../libs/three.js-r110/examples/jsm/controls/OrbitControls.js';
 import { MD2Character } from '../libs/three.js-r110/examples/jsm/misc/MD2Character.js';
 
-//import { GLTFLoader } from '../libs/GLTFLoader.js';
+//import * as GLTFLoader from '../libs/three.js-r110/examples/jsm/loaders/GLTFLoader.js';
+//import * as GLTFLoader from '../libs/three.js-r110/examples/js/loaders/GLTFLoader.js';
+import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/loaders/GLTFLoader.js';
 
 
 
@@ -186,20 +188,16 @@ function init() {
     
     
     //BLASTOISE
-    var loader = new THREE.GLTFLoader();
+    var loader = new GLTFLoader();
     loader.load(
-       "blastoise.glb",
+       "blastoise2.gltf",
        function ( gltf ) {
-          var scale = 5.6;
-          blastoise.body = gltf.scene.children[0];
-          blastoise.body.name = "body";
-          blastoise.body.rotation.set ( 0, -1.5708, 0 );
-          blastoise.body.scale.set (scale,scale,scale);
-          blastoise.body.position.set ( 0, 3.6, 0 );
-          blastoisebody.castShadow = true;
-          blastoise.frame.add(blastoise.body);
+            blastoise = gltf.scene;
+            scene.add( blastoise );
+            blastoise.scale.set(0.01, 0.01, 0.01);
+            //createGUI( blastoise, gltf.animations );
        },
-    );scene.add( blastoise.frame )
+    );
 
 }
 
