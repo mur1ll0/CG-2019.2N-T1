@@ -32,6 +32,9 @@
 
 			var api = {};
 
+			var soundUrl = 'blastoiseAttack.wav'
+			var audioAttack = new Audio(soundUrl);
+
 			init();
 			animate();
 
@@ -224,6 +227,8 @@
 				//Q to attack
 				if ( keyboard.pressed("Q") ){
 					newAnim = { state: 'attack' };
+
+					audioAttack.play();
 				}
 
 				//Change anim				
