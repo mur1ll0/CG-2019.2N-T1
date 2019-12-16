@@ -42,7 +42,7 @@
 				document.body.appendChild( container );
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 100 );
-				camera.position.set( 0, 9, 15 );
+				camera.position.set( 0, 9, -15 );
 				//camera.lookAt( new THREE.Vector3( 0, 2, 0 ) );
 
 				scene = new THREE.Scene();
@@ -111,10 +111,12 @@
 				stats = new Stats();
 				container.appendChild( stats.dom );
 
-				// controls
+				//Camera controls
 				controls = new OrbitControls( camera, renderer.domElement );
 
 			}
+			//INIT OVER
+			/////////////////////////////////////////////////////////////////////////////////////////////
 
 			function createGUI( model, animations ) {
 
@@ -124,7 +126,7 @@
 
 				mixer = new THREE.AnimationMixer( model );
 
-				actions = {};
+				actions = [];
 
 				for ( var i = 0; i < animations.length; i ++ ) {
 
@@ -162,22 +164,23 @@
 			}
 
 			function fadeToAction( name, duration ) {
+				if (typeof actions !== 'undefined') {
+					previousAction = activeAction;
+					activeAction = actions[ name ];
 
-				previousAction = activeAction;
-				activeAction = actions[ name ];
+					if ( previousAction !== activeAction ) {
 
-				if ( previousAction !== activeAction ) {
+						previousAction.fadeOut( duration );
 
-					previousAction.fadeOut( duration );
+					}
 
+					activeAction
+						.reset()
+						.setEffectiveTimeScale( 1 )
+						.setEffectiveWeight( 1 )
+						.fadeIn( duration )
+						.play();
 				}
-
-				activeAction
-					.reset()
-					.setEffectiveTimeScale( 1 )
-					.setEffectiveWeight( 1 )
-					.fadeIn( duration )
-					.play();
 
 			}
 
@@ -193,23 +196,28 @@
 			
 			function update()
 			{
-				var newAnim = { state: 'idle' }
+				var newAnim = { state: 'idle' };
+				var relativeCameraOffset = new THREE.Vector3(0,9,-15);
 				
 				//WASD Movement
 				if ( keyboard.pressed("W") ){
 					model.translateZ( moveSpeed );
 					newAnim = { state: 'walk' };
+					var cameraOffset = relativeCameraOffset.applyMatrix4( model.matrixWorld );
+					camera.position.lerp(cameraOffset, 1.5);
 				}
 				else if ( keyboard.pressed("S") ){
 					model.translateZ(  -moveSpeed );
 					newAnim = { state: 'walk' };
+					var cameraOffset = relativeCameraOffset.applyMatrix4( model.matrixWorld );
+					camera.position.lerp(cameraOffset, 1.5);
 				}
 				if ( keyboard.pressed("A") ){
-					model.rotation.y = model.rotation.y + 0.02;
+					model.rotation.y += 0.02;
 					newAnim = { state: 'walk' };
 				}
 				else if ( keyboard.pressed("D") ){
-					model.rotation.y = model.rotation.y - 0.02;
+					model.rotation.y -= 0.02;
 					newAnim = { state: 'walk' };
 				}
 
@@ -223,9 +231,14 @@
 					api.state = newAnim.state;
 					fadeToAction( api.state, 0.5 );
 				}
+
+				//CAMERA Movement
+				if (typeof model !== 'undefined') {
+					camera.lookAt( model.position );
+				}
 				
 					
-				controls.update();
+				//controls.update(); //Controles da camera com o mouse
 				stats.update();
 			}
 
@@ -237,11 +250,9 @@
 				if ( mixer ) mixer.update( dt );
 
 				requestAnimationFrame( animate );
-
 				renderer.render( scene, camera );
 
-				update()
-
+				update();
 			}
 
 		</script>
