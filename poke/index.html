@@ -23,7 +23,7 @@
 
 
 			var container, stats, clock, gui, mixer, actions, activeAction, previousAction;
-			var camera, scene, renderer, model, cube, face, controls;
+			var camera, scene, renderer, model, cube, face, controls, bullet;
 
 			var keyboard = new THREEx.KeyboardState();
 
@@ -32,7 +32,7 @@
 
 			var api = {};
 
-			var soundUrl = 'blastoiseAttack.wav'
+			var soundUrl = "blastoiseAttack.wav";
 			var audioAttack = new Audio(soundUrl);
 
 			init();
@@ -98,6 +98,13 @@
 					console.error( e );
 
 				} );
+
+				//Projétil
+				var textureLoader = new THREE.TextureLoader();
+				var texture0 = textureLoader.load( 'uffs.png' );
+				var bulletMaterial = new THREE.MeshBasicMaterial({map: texture0});
+				var bulletGeometry = new THREE.SphereGeometry( 0.5, 16, 16 );
+				bullet = new THREE.Mesh( bulletGeometry, bulletMaterial );
 
 			
 
@@ -199,47 +206,56 @@
 			
 			function update()
 			{
-				var newAnim = { state: 'idle' };
-				var relativeCameraOffset = new THREE.Vector3(0,9,-15);
-				
-				//WASD Movement
-				if ( keyboard.pressed("W") ){
-					model.translateZ( moveSpeed );
-					newAnim = { state: 'walk' };
-					var cameraOffset = relativeCameraOffset.applyMatrix4( model.matrixWorld );
-					camera.position.lerp(cameraOffset, 1.5);
-				}
-				else if ( keyboard.pressed("S") ){
-					model.translateZ(  -moveSpeed );
-					newAnim = { state: 'walk' };
-					var cameraOffset = relativeCameraOffset.applyMatrix4( model.matrixWorld );
-					camera.position.lerp(cameraOffset, 1.5);
-				}
-				if ( keyboard.pressed("A") ){
-					model.rotation.y += 0.02;
-					newAnim = { state: 'walk' };
-				}
-				else if ( keyboard.pressed("D") ){
-					model.rotation.y -= 0.02;
-					newAnim = { state: 'walk' };
-				}
-
-				//Q to attack
-				if ( keyboard.pressed("Q") ){
-					newAnim = { state: 'attack' };
-
-					audioAttack.play();
-				}
-
-				//Change anim				
-				if (newAnim.state != api.state){
-					api.state = newAnim.state;
-					fadeToAction( api.state, 0.5 );
-				}
-
-				//CAMERA Movement
 				if (typeof model !== 'undefined') {
+					var newAnim = { state: 'idle' };
+					var relativeCameraOffset = new THREE.Vector3(0,9,-15);
+					var playerPos = model.position;
+					
+					//WASD Movement
+					if ( keyboard.pressed("W") ){
+						model.translateZ( moveSpeed );
+						newAnim = { state: 'walk' };
+						var cameraOffset = relativeCameraOffset.applyMatrix4( model.matrixWorld );
+						camera.position.lerp(cameraOffset, 1.5);
+					}
+					else if ( keyboard.pressed("S") ){
+						model.translateZ(  -moveSpeed );
+						newAnim = { state: 'walk' };
+						var cameraOffset = relativeCameraOffset.applyMatrix4( model.matrixWorld );
+						camera.position.lerp(cameraOffset, 1.5);
+					}
+					if ( keyboard.pressed("A") ){
+						model.rotation.y += 0.02;
+						newAnim = { state: 'walk' };
+					}
+					else if ( keyboard.pressed("D") ){
+						model.rotation.y -= 0.02;
+						newAnim = { state: 'walk' };
+					}
+
+					//Q to attack
+					if ( keyboard.pressed("Q") ){
+						newAnim = { state: 'attack' };
+						scene.add(bullet);
+						bullet.position.set(playerPos.x,playerPos.y+3.5,playerPos.z);
+						bullet.rotation.y = model.rotation.y;
+						audioAttack.play();
+					}
+
+					//Change anim				
+					if (newAnim.state != api.state){
+						api.state = newAnim.state;
+						fadeToAction( api.state, 0.5 );
+					}
+
+					//CAMERA Movement
 					camera.lookAt( model.position );
+				}
+
+				//Fisica da bala
+				if (typeof bullet !== 'undefined') {
+					bullet.rotation.z += 0.05;
+					bullet.translateZ(0.2);
 				}
 				
 					
