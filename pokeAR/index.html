@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Pokemon CG</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+
+	<body>
+		<script src='threex.keyboardstate.js'></script>
+		<script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+		<script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.5.5/aframe/build/aframe-ar.js"></script>
+		<body style='margin : 0px; overflow: hidden;'>
+
+		<script type="module">
+
+			import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/build/three.module.js';
+
+			import Stats from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/libs/stats.module.js';
+			
+			import { OrbitControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/controls/OrbitControls.js';
+			
+			import { GUI } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/libs/dat.gui.module.js';
+
+			import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/loaders/GLTFLoader.js';
+
+			
+			//import * as JeelizFaceTransfer from 'https://github.com/jeeliz/jeelizWeboji/blob/master/dist/jeelizFaceTransfer.js';
+			
+
+
+			
+			var container, stats, clock, gui, mixer, actions, activeAction, previousAction;
+			var camera, scene, renderer, model, cube, face, controls;
+
+			var keyboard = new THREEx.KeyboardState();
+
+			// Movimentação
+			var moveSpeed = 0.02;
+
+			var api = {};
+
+			init();
+			animate();
+
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 100 );
+				camera.position.set( 0, 9, 15 );
+				//camera.lookAt( new THREE.Vector3( 0, 2, 0 ) );
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0xe0e0e0 );
+				scene.fog = new THREE.Fog( 0xe0e0e0, 20, 100 );
+
+				clock = new THREE.Clock();
+
+				// lights
+
+				var light = new THREE.HemisphereLight( 0xffffff, 0x444444 );
+				light.position.set( 0, 20, 0 );
+				scene.add( light );
+
+				light = new THREE.DirectionalLight( 0xffffff );
+				light.position.set( 0, 20, 10 );
+				scene.add( light );
+
+				// ground
+
+				var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2000, 2000 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+				mesh.rotation.x = - Math.PI / 2;
+				scene.add( mesh );
+
+				var grid = new THREE.GridHelper( 200, 40, 0x000000, 0x000000 );
+				grid.material.opacity = 0.2;
+				grid.material.transparent = true;
+				scene.add( grid );
+
+				///////////////////////////////////////////////////////////////
+				// CARREGAR MODELOS 3D
+				///////////////////////////////////////////////////////////////
+				//BLASTOISE
+				var loader = new GLTFLoader();
+				loader.load( './blastoise.gltf', function ( gltf ) {
+
+					model = gltf.scene;
+					scene.add( model );
+					model.scale.set(1,1,1);
+
+					//Aplica Double Side na mascara
+					//console.log(gltf.scene.children[1].children[13].material);
+					gltf.scene.children[1].children[13].material.side = THREE.DoubleSide;
+
+					//Criar a GUI com as animações
+					createGUI( model, gltf.animations );
+
+				}, undefined, function ( e ) {
+
+					console.error( e );
+
+				} );
+
+			
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.gammaOutput = true;
+				renderer.gammaFactor = 2.2;
+				container.appendChild( renderer.domElement );
+
+				window.addEventListener('resize', onWindowResize, false );
+
+				// stats
+				stats = new Stats();
+				container.appendChild( stats.dom );
+
+				// controls
+				controls = new OrbitControls( camera, renderer.domElement );
+
+			}
+
+			function createGUI( model, animations ) {
+
+				var states = [ 'idle','walk', 'attack' ];
+
+				gui = new GUI();
+
+				mixer = new THREE.AnimationMixer( model );
+
+				actions = {};
+
+				for ( var i = 0; i < animations.length; i ++ ) {
+
+					var clip = animations[ i ];
+					var action = mixer.clipAction( clip );
+					actions[ clip.name ] = action;
+
+					if ( states.indexOf( clip.name ) >= 3 ) {
+
+						action.clampWhenFinished = true;
+						action.loop = THREE.LoopOnce;
+
+					}
+
+				}
+
+				// states
+
+				api = { state: 'idle' };
+
+				var statesFolder = gui.addFolder( 'States' );
+
+				var clipCtrl = statesFolder.add( api, 'state' ).options( states );
+
+				clipCtrl.onChange( function () {
+
+					fadeToAction( api.state, 0.5 );
+
+				} );
+
+				activeAction = actions[ 'idle' ];
+				activeAction.play();
+
+				statesFolder.open();
+			}
+
+			function fadeToAction( name, duration ) {
+
+				previousAction = activeAction;
+				activeAction = actions[ name ];
+
+				if ( previousAction !== activeAction ) {
+
+					previousAction.fadeOut( duration );
+
+				}
+
+				activeAction
+					.reset()
+					.setEffectiveTimeScale( 1 )
+					.setEffectiveWeight( 1 )
+					.fadeIn( duration )
+					.play();
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			
+			function update()
+			{
+				var newAnim = { state: 'idle' }
+				
+				//WASD Movement
+				if ( keyboard.pressed("W") ){
+					model.translateZ( moveSpeed );
+					newAnim = { state: 'walk' };
+				}
+				else if ( keyboard.pressed("S") ){
+					model.translateZ(  -moveSpeed );
+					newAnim = { state: 'walk' };
+				}
+				if ( keyboard.pressed("A") ){
+					model.rotation.y = model.rotation.y + 0.02;
+					newAnim = { state: 'walk' };
+				}
+				else if ( keyboard.pressed("D") ){
+					model.rotation.y = model.rotation.y - 0.02;
+					newAnim = { state: 'walk' };
+				}
+
+				//Q to attack
+				if ( keyboard.pressed("Q") ){
+					newAnim = { state: 'attack' };
+				}
+
+				//Change anim				
+				if (newAnim.state != api.state){
+					api.state = newAnim.state;
+					fadeToAction( api.state, 0.5 );
+				}
+				
+					
+				controls.update();
+				stats.update();
+			}
+
+
+			function animate() {
+
+				var dt = clock.getDelta();
+
+				if ( mixer ) mixer.update( dt );
+
+				requestAnimationFrame( animate );
+
+				renderer.render( scene, camera );
+
+				update()
+
+			}
+
+		</script>
+
+	<a-scene embedded arjs='trackingMethod: best;'>
+			
+		<a-gltf-model src="blastoise.gltf"></a-gltf-model>
+		<a-marker-camera preset='hiro'></a-marker-camera>
+		<a-gltf-model src="#blastoise"></a-gltf-model>
+		<a-entity gltf-model="#blastoise" animation-mixer></a-entity>
+		<a-camera-static/>
+	</a-scene>
+
+	</body>
+</html>
