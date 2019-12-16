@@ -23,7 +23,7 @@
 
 
 			var container, stats, clock, gui, mixer, actions, activeAction, previousAction;
-			var camera, scene, renderer, model, cube, face, controls, bullet, audioAttack;
+			var camera, scene, renderer, model, cube, face, controls, bullet, listener, sound;
 
 			var keyboard = new THREEx.KeyboardState();
 
@@ -107,22 +107,10 @@
 				bullet = new THREE.Mesh( bulletGeometry, bulletMaterial );
 
 
-				//Audio ao atacar
-				// create an AudioListener and add it to the camera
-				var listener = new THREE.AudioListener();
+				//Listener de audio
+				listener = new THREE.AudioListener();
+				sound = new THREE.Audio( listener );
 				camera.add( listener );
-
-				// create a global audio source
-				audioAttack = new THREE.Audio( listener );
-
-				// load a sound and set it as the Audio object's buffer
-				var audioLoader = new THREE.AudioLoader();
-				audioLoader.load( 'blastoiseAttack.wav', function( buffer ) {
-					audioAttack.setBuffer( buffer );
-					audioAttack.setLoop( true );
-					audioAttack.setVolume( 0.5 );
-				});
-
 			
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -220,6 +208,20 @@
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
 			}
+			
+
+			//Som ao atacar
+			function playSound() {
+				var audioLoader = new THREE.AudioLoader();
+				audioLoader.load("blastoiseAttack.ogg", function(buffer) {
+					sound.setBuffer( buffer );
+					sound.play();
+				});
+
+				var source = listener.context.createBufferSource();
+				source.connect(listener.context.destination);
+				source.start();
+			}
 
 			
 			function update()
@@ -257,7 +259,7 @@
 						scene.add(bullet);
 						bullet.position.set(playerPos.x,playerPos.y+3.5,playerPos.z);
 						bullet.rotation.y = model.rotation.y;
-						audioAttack.play();
+						playSound();
 					}
 
 					//Change anim				
