@@ -1,7 +1,7 @@
 # CG-Pokemon_ThreeJS
 <br><h2>Alunos:</h2></br>
 Murillo Andé Maleski</br>
-Matrícula: 1521101003</br</br>
+Matrícula: 1521101003</br></br>
 Rodrigo Almeida Costa</br>
 Matrículo: 1521101001</br></br>
 
