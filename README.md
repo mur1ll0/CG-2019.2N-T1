@@ -12,6 +12,6 @@ Q - animação extra</br>
 
 
 <h1> Pokemon com realidade aumentada:</h1>
-Apontar a camera para o 'Hiro' e um pokemon será desenhado na tela.<br>
-![Hiro]('./pokeAR/hiro.png')
-<a href='./pokeAR/index.html'>Pokemon AR</a><br>
+Apontar a camera para o 'Hiro' e um pokemon será desenhado na tela.</br>
+![Hiro]("./pokeAR/hiro.png")</br>
+<a href='./pokeAR/index.html'>Pokemon AR</a></br>
