@@ -3,7 +3,7 @@
 Murillo Andé Maleski</br>
 Matrícula: 1521101003</br></br>
 Rodrigo Almeida Costa</br>
-Matrículo: 1521101001</br></br>
+Matrícula: 1521101001</br></br>
 
 <h1> Pokemon com controles do teclado:</h1>
 WASD - movimentam o pokemon</br>
